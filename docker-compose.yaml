@@ -5,6 +5,9 @@ services:
     ports:
       - "5050:5050"
     env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/uniryde
+      REDIS_URL: redis://redis:6379
     volumes:
       - .:/app
       - /app/node_modules
@@ -14,6 +17,8 @@ services:
 
   postgres:
     image: postgres:18-alpine
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -23,6 +28,8 @@ services:
 
   redis:
     image: redis:8.2-alpine
+    ports:
+      - "6379:6379"
 
 volumes:
   pgdata:
