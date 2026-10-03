@@ -1,6 +1,11 @@
 import express, { type Express } from "express";
 import cookieParser from "cookie-parser";
 
+import { errorHandler } from "./middleware/error-handler.js";
+
+// Import Routes
+import authRoutes from "./modules/auth/auth.route.js";
+
 const app: Express = express();
 
 // Middlewares
@@ -13,6 +18,8 @@ app.use((req, _res, next) => {
 });
 
 // Routes
+app.use("/api/auth", authRoutes);
+
 app.get("/api/health", (_req, res) => {
   return res.status(200).json({
     success: true,
@@ -27,5 +34,8 @@ app.use((_req, res) => {
     message: "Route not found",
   });
 });
+
+// Global Error Handler
+app.use(errorHandler);
 
 export default app;
