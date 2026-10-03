@@ -9,4 +9,9 @@ export const env = {
     (() => {
       throw new Error("Missing DATABASE_URL environment variable");
     })(),
+  REDIS_URL:
+    process.env.REDIS_URL ??
+    (() => {
+      throw new Error("Missing REDIS_URL environment variable");
+    })(),
 };
