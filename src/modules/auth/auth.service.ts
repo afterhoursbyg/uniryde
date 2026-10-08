@@ -2,7 +2,7 @@ import { prisma } from "../../lib/prisma.js";
 import { hashPassword, verifyPassword } from "../../utils/password.js";
 import type { LoginInput, RegisterInput } from "./auth.schema.js";
 import { AppError } from "../../utils/app-error.js";
-import { createSession } from "../../utils/session.js";
+import { createSession, deleteSession } from "../../utils/session.js";
 
 // Register Service
 
@@ -75,4 +75,10 @@ export const loginService = async (data: LoginInput) => {
     },
     sessionId,
   };
+};
+
+// Logout Service
+
+export const logoutService = async (userId: string, sessionId: string) => {
+  await deleteSession(userId, sessionId);
 };

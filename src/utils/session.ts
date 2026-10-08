@@ -3,11 +3,11 @@ import { redis } from "../lib/redis";
 
 export const SESSION_TTL = 60 * 60 * 24 * 15; // 15 days
 
-const generateSessionId = () => {
+export const generateSessionId = () => {
   return crypto.randomBytes(32).toString("base64url");
 };
 
-const hashSessionId = (sessionId: string) => {
+export const hashSessionId = (sessionId: string) => {
   return crypto.createHash("sha256").update(sessionId).digest("hex");
 };
 
@@ -24,4 +24,14 @@ export const createSession = async (userId: string) => {
     .exec();
 
   return sessionId;
+};
+
+export const deleteSession = async (userId: string, sessionId: string) => {
+  const sessionHash = hashSessionId(sessionId);
+
+  await redis
+    .multi()
+    .del(`session:${sessionHash}`)
+    .sRem(`user_sessions:${userId}`, sessionHash)
+    .exec();
 };

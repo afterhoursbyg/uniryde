@@ -1,8 +1,13 @@
 import type { Request, Response, CookieOptions } from "express";
 import { loginSchema, registerSchema } from "./auth.schema.js";
-import { registerService, loginService } from "./auth.service.js";
+import {
+  registerService,
+  loginService,
+  logoutService,
+} from "./auth.service.js";
 import { env } from "../../config/env.config.js";
 import { SESSION_TTL } from "../../utils/session.js";
+import { AppError } from "../../utils/app-error.js";
 
 const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
@@ -33,5 +38,20 @@ export const login = async (req: Request, res: Response) => {
     success: true,
     user,
     message: "User logged in successfully",
+  });
+};
+
+// Logout Controller
+
+export const logout = async (req: Request, res: Response) => {
+  if (!req.userId || !req.sessionId) {
+    throw new AppError(401, "Authentication required");
+  }
+
+  await logoutService(req.userId, req.sessionId);
+
+  return res.clearCookie("sid", COOKIE_OPTIONS).status(200).json({
+    success: true,
+    message: "Logged out successfully",
   });
 };
