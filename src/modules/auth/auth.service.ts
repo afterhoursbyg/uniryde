@@ -1,8 +1,10 @@
 import { prisma } from "../../lib/prisma.js";
-import { hashPassword } from "../../utils/password.js";
-import type { RegisterInput } from "./auth.schema.js";
+import { hashPassword, verifyPassword } from "../../utils/password.js";
+import type { LoginInput, RegisterInput } from "./auth.schema.js";
 import { AppError } from "../../utils/app-error.js";
 import { createSession } from "../../utils/session.js";
+
+// Register Service
 
 export const registerService = async (data: RegisterInput) => {
   const existingUser = await prisma.user.findFirst({
@@ -34,6 +36,43 @@ export const registerService = async (data: RegisterInput) => {
 
   return {
     user,
+    sessionId,
+  };
+};
+
+// Login Service
+
+export const loginService = async (data: LoginInput) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: data.email,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      password: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(401, "Invalid email or password");
+  }
+
+  const isPasswordValid = await verifyPassword(user.password, data.password);
+
+  if (!isPasswordValid) {
+    throw new AppError(401, "Invalid email or password");
+  }
+
+  const sessionId = await createSession(user.id);
+
+  return {
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    },
     sessionId,
   };
 };

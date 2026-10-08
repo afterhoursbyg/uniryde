@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { redis } from "../lib/redis";
 
-const SESSION_TTL = 60 * 60 * 24 * 15; // 15 days
+export const SESSION_TTL = 60 * 60 * 24 * 15; // 15 days
 
 const generateSessionId = () => {
   return crypto.randomBytes(32).toString("base64url");
