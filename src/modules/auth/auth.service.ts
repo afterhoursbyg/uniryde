@@ -1,18 +1,14 @@
-import { redis } from "../../lib/redis.js";
 import { prisma } from "../../lib/prisma.js";
 import { hashPassword } from "../../utils/password.js";
 import type { RegisterInput } from "./auth.schema.js";
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  generateSessionId,
-  hashRefreshToken,
-} from "../../utils/token.js";
 import { AppError } from "../../utils/app-error.js";
+import { createSession } from "../../utils/session.js";
 
 export const registerService = async (data: RegisterInput) => {
-  const existingUser = await prisma.user.findUnique({
-    where: { email: data.email },
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: data.email }, { username: data.username }],
+    },
   });
 
   if (existingUser) {
@@ -34,18 +30,10 @@ export const registerService = async (data: RegisterInput) => {
     },
   });
 
-  const sessionId = generateSessionId();
-  const refreshToken = generateRefreshToken();
-  const refreshTokenHash = hashRefreshToken(refreshToken);
-  const accessToken = generateAccessToken(user.id, sessionId);
-  const sessionKey = `session:${sessionId}`;
+  const sessionId = await createSession(user.id);
 
-  await redis.hSet(sessionKey, {
-    userId: user.id,
-    refreshTokenHash,
-  });
-
-  await redis.expire(sessionKey, 60 * 60 * 24 * 30); // 30 days
-
-  return { accessToken, refreshToken, user };
+  return {
+    user,
+    sessionId,
+  };
 };
