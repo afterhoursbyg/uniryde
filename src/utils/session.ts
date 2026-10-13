@@ -35,3 +35,17 @@ export const deleteSession = async (userId: string, sessionId: string) => {
     .sRem(`user_sessions:${userId}`, sessionHash)
     .exec();
 };
+
+export const deleteAllSessions = async (userId: string) => {
+  const sessionHashes = await redis.sMembers(`user_sessions:${userId}`);
+
+  const pipeline = redis.multi();
+
+  for (const sessionHash of sessionHashes) {
+    pipeline.del(`session:${sessionHash}`);
+  }
+
+  pipeline.del(`user_sessions:${userId}`);
+
+  await pipeline.exec();
+};

@@ -4,6 +4,7 @@ import {
   registerService,
   loginService,
   logoutService,
+  logoutAllService,
 } from "./auth.service.js";
 import { env } from "../../config/env.config.js";
 import { SESSION_TTL } from "../../utils/session.js";
@@ -53,5 +54,20 @@ export const logout = async (req: Request, res: Response) => {
   return res.clearCookie("sid", COOKIE_OPTIONS).status(200).json({
     success: true,
     message: "Logged out successfully",
+  });
+};
+
+// Logout All Controller
+
+export const logoutAll = async (req: Request, res: Response) => {
+  if (!req.userId) {
+    throw new AppError(401, "Authentication required");
+  }
+
+  await logoutAllService(req.userId);
+
+  return res.clearCookie("sid", COOKIE_OPTIONS).status(200).json({
+    success: true,
+    message: "Logged out from all sessions successfully",
   });
 };

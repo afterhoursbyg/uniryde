@@ -2,7 +2,11 @@ import { prisma } from "../../lib/prisma.js";
 import { hashPassword, verifyPassword } from "../../utils/password.js";
 import type { LoginInput, RegisterInput } from "./auth.schema.js";
 import { AppError } from "../../utils/app-error.js";
-import { createSession, deleteSession } from "../../utils/session.js";
+import {
+  createSession,
+  deleteAllSessions,
+  deleteSession,
+} from "../../utils/session.js";
 
 // Register Service
 
@@ -13,8 +17,12 @@ export const registerService = async (data: RegisterInput) => {
     },
   });
 
-  if (existingUser) {
-    throw new AppError(409, "User already exists");
+  if (existingUser?.email === data.email) {
+    throw new AppError(409, "Email already exists");
+  }
+
+  if (existingUser?.username === data.username) {
+    throw new AppError(409, "Username already exists");
   }
 
   const passwordHash = await hashPassword(data.password);
@@ -82,3 +90,9 @@ export const loginService = async (data: LoginInput) => {
 export const logoutService = async (userId: string, sessionId: string) => {
   await deleteSession(userId, sessionId);
 };
+
+// Logout All Service
+
+export async function logoutAllService(userId: string) {
+  await deleteAllSessions(userId);
+}
