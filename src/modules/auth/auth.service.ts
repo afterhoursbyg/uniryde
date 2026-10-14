@@ -7,45 +7,39 @@ import {
   deleteAllSessions,
   deleteSession,
 } from "../../utils/session.js";
+import { Prisma } from "../../../generated/prisma/client.js";
 
 // Register Service
 
 export const registerService = async (data: RegisterInput) => {
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      OR: [{ email: data.email }, { username: data.username }],
-    },
-  });
+  try {
+    const passwordHash = await hashPassword(data.password);
 
-  if (existingUser?.email === data.email) {
-    throw new AppError(409, "Email already exists");
+    const user = await prisma.user.create({
+      data: {
+        username: data.username,
+        email: data.email,
+        password: passwordHash,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    const sessionId = await createSession(user.id);
+
+    return { user, sessionId };
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        throw new AppError(409, "Email or username already exists");
+      }
+    }
+
+    throw error;
   }
-
-  if (existingUser?.username === data.username) {
-    throw new AppError(409, "Username already exists");
-  }
-
-  const passwordHash = await hashPassword(data.password);
-
-  const user = await prisma.user.create({
-    data: {
-      username: data.username,
-      email: data.email,
-      password: passwordHash,
-    },
-    select: {
-      id: true,
-      username: true,
-      email: true,
-    },
-  });
-
-  const sessionId = await createSession(user.id);
-
-  return {
-    user,
-    sessionId,
-  };
 };
 
 // Login Service

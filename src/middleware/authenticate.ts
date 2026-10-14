@@ -12,7 +12,7 @@ export const authenticate = async (
   const sessionId: unknown = req.cookies?.sid;
 
   if (typeof sessionId !== "string" || !sessionId) {
-    throw new AppError(401, "Authentication required");
+    throw new AppError(401, "Authentication is required");
   }
 
   const sessionHash = hashSessionId(sessionId);

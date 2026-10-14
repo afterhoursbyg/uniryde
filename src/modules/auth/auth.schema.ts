@@ -11,7 +11,9 @@ export const registerSchema = z.object({
       "Username can only contain letters, numbers, and underscores",
     ),
 
-  email: z.email("Invalid email address"),
+  email: z
+    .email("Invalid email address")
+    .transform((email) => email.toLowerCase()),
 
   password: z
     .string()
@@ -20,7 +22,9 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  email: z.email("Invalid email address"),
+  email: z
+    .email("Invalid email address")
+    .transform((email) => email.toLowerCase()),
 
   password: z.string().min(1, "Password is required"),
 });

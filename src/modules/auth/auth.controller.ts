@@ -10,7 +10,7 @@ import { env } from "../../config/env.config.js";
 import { SESSION_TTL } from "../../utils/session.js";
 import { AppError } from "../../utils/app-error.js";
 
-const COOKIE_OPTIONS: CookieOptions = {
+export const COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: env.NODE_ENV === "production",
   sameSite: "lax",
@@ -46,7 +46,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   if (!req.userId || !req.sessionId) {
-    throw new AppError(401, "Authentication required");
+    throw new AppError(401, "Authentication is required");
   }
 
   await logoutService(req.userId, req.sessionId);
@@ -61,7 +61,7 @@ export const logout = async (req: Request, res: Response) => {
 
 export const logoutAll = async (req: Request, res: Response) => {
   if (!req.userId) {
-    throw new AppError(401, "Authentication required");
+    throw new AppError(401, "Authentication is required");
   }
 
   await logoutAllService(req.userId);
