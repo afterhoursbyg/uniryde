@@ -5,6 +5,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 
 // Import Routes
 import authRoutes from "./modules/auth/auth.route.js";
+import userRoutes from "./modules/users/users.route.js";
 
 const app: Express = express();
 
@@ -19,6 +20,7 @@ app.use((req, _res, next) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/api/health", (_req, res) => {
   return res.status(200).json({
