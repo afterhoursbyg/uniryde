@@ -17,11 +17,7 @@ export const getCurrentUser = async (req: Request, res: Response) => {
 
   const user = await getCurrentUserService(req.userId);
 
-  return res.status(200).json({
-    success: true,
-    user,
-    message: "Profile fetched successfully",
-  });
+  return res.status(200).json({ user });
 };
 
 // Update Current User Controller
@@ -35,11 +31,7 @@ export const updateCurrentUser = async (req: Request, res: Response) => {
 
   const user = await updateCurrentUserService(req.userId, data);
 
-  return res.status(200).json({
-    success: true,
-    user,
-    message: "Profile updated successfully",
-  });
+  return res.status(200).json({ user });
 };
 
 // Delete Current User Controller
@@ -51,8 +43,5 @@ export const deleteCurrentUser = async (req: Request, res: Response) => {
 
   await deleteCurrentUserService(req.userId);
 
-  return res.clearCookie("sid", COOKIE_OPTIONS).status(200).json({
-    success: true,
-    message: "Account deleted successfully",
-  });
+  return res.clearCookie("sid", COOKIE_OPTIONS).status(204).end();
 };
