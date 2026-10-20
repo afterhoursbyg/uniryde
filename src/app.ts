@@ -19,22 +19,16 @@ app.use((req, _res, next) => {
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 
 app.get("/api/health", (_req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: "UniRyde API is running",
-  });
+  return res.status(200).json({ message: "UniRyde API is running" });
 });
 
 // 404 Error
 app.use((_req, res) => {
-  return res.status(404).json({
-    success: false,
-    message: "Route not found",
-  });
+  return res.status(404).json({ message: "Route not found" });
 });
 
 // Global Error Handler

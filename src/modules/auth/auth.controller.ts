@@ -23,11 +23,10 @@ export const COOKIE_OPTIONS: CookieOptions = {
 export const register = async (req: Request, res: Response) => {
   const data = registerSchema.parse(req.body);
   const { user, sessionId } = await registerService(data);
-  return res.cookie("sid", sessionId, COOKIE_OPTIONS).status(201).json({
-    success: true,
-    user,
-    message: "User registered successfully",
-  });
+  return res
+    .cookie("sid", sessionId, COOKIE_OPTIONS)
+    .status(201)
+    .json({ user });
 };
 
 // Login Controller
@@ -35,11 +34,10 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const data = loginSchema.parse(req.body);
   const { user, sessionId } = await loginService(data);
-  return res.cookie("sid", sessionId, COOKIE_OPTIONS).status(200).json({
-    success: true,
-    user,
-    message: "User logged in successfully",
-  });
+  return res
+    .cookie("sid", sessionId, COOKIE_OPTIONS)
+    .status(200)
+    .json({ user });
 };
 
 // Logout Controller
@@ -51,10 +49,7 @@ export const logout = async (req: Request, res: Response) => {
 
   await logoutService(req.userId, req.sessionId);
 
-  return res.clearCookie("sid", COOKIE_OPTIONS).status(200).json({
-    success: true,
-    message: "Logged out successfully",
-  });
+  return res.clearCookie("sid", COOKIE_OPTIONS).status(204).end();
 };
 
 // Logout All Controller
@@ -66,8 +61,5 @@ export const logoutAll = async (req: Request, res: Response) => {
 
   await logoutAllService(req.userId);
 
-  return res.clearCookie("sid", COOKIE_OPTIONS).status(200).json({
-    success: true,
-    message: "Logged out from all sessions successfully",
-  });
+  return res.clearCookie("sid", COOKIE_OPTIONS).status(204).end();
 };
