@@ -1,8 +1,8 @@
 {
-  "name": "uniryde",
+  "name": "uniryde-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "packageManager": "pnpm@11.8.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

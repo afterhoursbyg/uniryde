@@ -22,7 +22,7 @@ app.use((req, _res, next) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 
-app.get("/api/health", (_req, res) => {
+app.get("/api/v1/health", (_req, res) => {
   return res.status(200).json({ message: "UniRyde API is running" });
 });
 
